@@ -13,7 +13,11 @@ import "./index.css";
 // Используйте этот метод для всех операций в калькуляторе.
 
 function Calculator() {
-  const [input, setInput] = useState("0");//возможно стоит потом добавить эту переменную в  <div className="display">0</div>
+  const [input, setInput] = useState("0");
+  const [firstNumber, setFirstNumber] = useState(null);
+  const [secondNumber, setSecondNumber] = useState(false);
+  const [operator, setOperator] = useState(null);
+
   return (
     <div className="calculator-container">
       <h1 className="calculator-title">UseState Calculator</h1>
@@ -27,7 +31,11 @@ function Calculator() {
           <button onClick={() => setInput((prev) => prev === "0" ? "1" : prev + "1")}>1</button>
           <button onClick={() => setInput((prev) => prev === "0" ? "2" : prev + "2")}>2</button>
           <button onClick={() => setInput((prev) => prev === "0" ? "3" : prev + "3")}>3</button>
-          <button className="operator">+</button>
+          <button className="operator" onClick={() => {
+            setFirstNumber(input); 
+            setOperator("+"); 
+            setSecondNumber(true);
+            }}>+</button>
           <button onClick={() => setInput((prev) => prev === "0" ? "4" : prev + "4")}>4</button>
           <button onClick={() => setInput((prev) => prev === "0" ? "5" : prev + "5")}>5</button>
           <button onClick={() => setInput((prev) => prev === "0" ? "6" : prev + "6")}>6</button>
@@ -38,7 +46,33 @@ function Calculator() {
           <button className="operator">×</button>
           <button onClick={() => setInput((prev) => prev === "0" ? "0" : prev + "0")}>0</button>
           <button>,</button>
-          <button className="equals">=</button>
+          <button className="equals" onClick={() => {
+            if (firstNumber !== null && operator !== null){
+              const num1 = parseFloat(firstNumber);
+              const num2 = parseFloat(input);
+              let result;
+              switch (operator){
+                case "+":
+                  result = num1 + num2;
+                  break;
+                  case "-":
+                  result = num1 - num2;
+                  break;
+                  case "*":
+                  result = num1 + num2;
+                  break;
+                  case "/":
+                  result = num1 + num2;
+                  break;
+                  default:
+                    result = num2;
+              }
+              setInput(String(result));
+              setFirstNumber(null);
+              setOperator(null);
+              setSecondNumber(false);
+            }
+          }}>=</button>
           <button className="operator">÷</button>
           <button className="clear" onClick={() => setInput("0")}>C</button>
         </div>
