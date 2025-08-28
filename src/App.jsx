@@ -17,6 +17,14 @@ function Calculator() {
   const [firstNumber, setFirstNumber] = useState(null);
   const [secondNumber, setSecondNumber] = useState(false);
   const [operator, setOperator] = useState(null);
+  const handleDigitClick = (digit) => {
+    if (secondNumber) {
+      setInput(digit);
+      setSecondNumber(false);
+    } else {
+      setInput(prev => prev === "0" ? digit : prev + digit);
+    }
+  }
 
   return (
     <div className="calculator-container">
@@ -28,24 +36,47 @@ function Calculator() {
           <button className="decrement" onClick={() => (setInput((prev) => prev - 1))}>-1</button>
         </div>
         <div className="buttons">
-          <button onClick={() => setInput((prev) => prev === "0" ? "1" : prev + "1")}>1</button>
-          <button onClick={() => setInput((prev) => prev === "0" ? "2" : prev + "2")}>2</button>
-          <button onClick={() => setInput((prev) => prev === "0" ? "3" : prev + "3")}>3</button>
+
+          <button onClick={()=> handleDigitClick("1")}>1</button>
+          <button onClick={()=> handleDigitClick("2")}>2</button>
+          <button onClick={()=> handleDigitClick("3")}>3</button>
+
           <button className="operator" onClick={() => {
             setFirstNumber(input); 
             setOperator("+"); 
             setSecondNumber(true);
             }}>+</button>
-          <button onClick={() => setInput((prev) => prev === "0" ? "4" : prev + "4")}>4</button>
-          <button onClick={() => setInput((prev) => prev === "0" ? "5" : prev + "5")}>5</button>
-          <button onClick={() => setInput((prev) => prev === "0" ? "6" : prev + "6")}>6</button>
-          <button className="operator">-</button>
-          <button onClick={() => setInput((prev) => prev === "0" ? "7" : prev + "7")}>7</button>
-          <button onClick={() => setInput((prev) => prev === "0" ? "8" : prev + "8")}>8</button>
-          <button onClick={() => setInput((prev) => prev === "0" ? "9" : prev + "9")}>9</button>
-          <button className="operator">×</button>
-          <button onClick={() => setInput((prev) => prev === "0" ? "0" : prev + "0")}>0</button>
+
+          <button onClick={()=> handleDigitClick("4")}>4</button>
+          <button onClick={()=> handleDigitClick("5")}>5</button>
+          <button onClick={()=> handleDigitClick("6")}>6</button>
+
+          <button className="operator" onClick={() => {
+            setFirstNumber(input); 
+            setOperator("-"); 
+            setSecondNumber(true);
+            }}>-</button>
+
+          <button onClick={()=> handleDigitClick("7")}>7</button>
+          <button onClick={()=> handleDigitClick("8")}>8</button>
+          <button onClick={()=> handleDigitClick("9")}>9</button>
+
+          <button className="operator" onClick={() => {
+            setFirstNumber(input); 
+            setOperator("*"); 
+            setSecondNumber(true);
+            }}>*</button>
+
+          <button onClick={()=> handleDigitClick("0")}>0</button>
+
+          <button className="operator" onClick={() => {
+            setFirstNumber(input); 
+            setOperator("/"); 
+            setSecondNumber(true);
+            }}>/</button>
+
           <button>,</button>
+
           <button className="equals" onClick={() => {
             if (firstNumber !== null && operator !== null){
               const num1 = parseFloat(firstNumber);
@@ -59,10 +90,10 @@ function Calculator() {
                   result = num1 - num2;
                   break;
                   case "*":
-                  result = num1 + num2;
+                  result = num1 * num2;
                   break;
                   case "/":
-                  result = num1 + num2;
+                  result = num1 / num2;
                   break;
                   default:
                     result = num2;
@@ -73,7 +104,7 @@ function Calculator() {
               setSecondNumber(false);
             }
           }}>=</button>
-          <button className="operator">÷</button>
+          
           <button className="clear" onClick={() => setInput("0")}>C</button>
         </div>
       </div>
