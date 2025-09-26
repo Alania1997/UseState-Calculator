@@ -1,30 +1,48 @@
 import { useState } from "react";
 import "./index.css";
 
-//Rus
-//1 - Создайте состояние input, которое будет отображать результат вычислений в калькуляторе.
-//2 - Создайте 2 функции для увеличения или уменьшения значения input на +1 или -1 и назначьте их на кнопки +1 / -1.
-//3 - Создайте функцию, которая будет выполнять определенную операцию на калькуляторе в зависимости от нажатой кнопки. В результате работы этой функции должен получиться полностью рабочий калькулятор. Используйте эту функцию в обработчиках событий для всех кнопок.
-
-//P.S. Если сложно продумать одну универсальную функцию, можете создать столько функций, сколько нужно. Не переживайте о чистоте кода.
-
-//P.P.S. В JavaScript есть метод eval(), который преобразует любую строку в JavaScript-выражение.
-//Пример: eval("console.log('Hello')") — выполнит этот код.
-// Используйте этот метод для всех операций в калькуляторе.
-
 function Calculator() {
   const [input, setInput] = useState("0");
   const [firstNumber, setFirstNumber] = useState(null);
-  const [secondNumber, setSecondNumber] = useState(false);
+  const [secondNumber, setSecondNumber] = useState(false); // ✅ useState
   const [operator, setOperator] = useState(null);
+
+  // Максимальная длина числа (ограничение)
+  const MAX_LENGTH = 10;
+
+  // Обработчик для цифр и запятой
   const handleDigitClick = (digit) => {
     if (secondNumber) {
-      setInput(digit);
+      setInput(digit); // Сбрасываем ввод после оператора
       setSecondNumber(false);
     } else {
-      setInput(prev => prev === "0" ? digit : prev + digit);
+      // Если текущее значение — "0", заменяем его на цифру (кроме запятой)
+      if (input === "0" && digit !== ",") {
+        setInput(digit);
+      } else if (digit === "," && !input.includes(".")) {
+        // Добавляем запятую, только если её ещё нет
+        setInput(input + ".");
+      } else if (digit !== ",") {
+        // Ограничение длины числа
+        if (input.length < MAX_LENGTH) {
+          setInput(input + digit);
+        }
+      }
     }
-  }
+  };
+
+  // Обработчик для +1 и -1 — теперь корректно работает с числами
+  const handleIncrement = () => {
+    const currentValue = parseFloat(input); // Преобразуем строку в число
+    const newValue = currentValue + 1;
+    setInput(String(newValue)); // Возвращаем как строку
+  };
+
+  const handleDecrement = () => {
+    const currentValue = parseFloat(input);
+    const newValue = currentValue - 1;
+    setInput(String(newValue));
+  };
 
   return (
     <div className="calculator-container">
@@ -32,80 +50,111 @@ function Calculator() {
       <div className="calculator">
         <div className="display">{input}</div>
         <div className="increment-buttons">
-          <button className="increment" onClick={() => (setInput((prev) => prev + 1))}>+1</button>
-          <button className="decrement" onClick={() => (setInput((prev) => prev - 1))}>-1</button>
+          <button className="increment" onClick={handleIncrement}>+1</button>
+          <button className="decrement" onClick={handleDecrement}>-1</button>
         </div>
         <div className="buttons">
+          <button onClick={() => handleDigitClick("1")}>1</button>
+          <button onClick={() => handleDigitClick("2")}>2</button>
+          <button onClick={() => handleDigitClick("3")}>3</button>
 
-          <button onClick={()=> handleDigitClick("1")}>1</button>
-          <button onClick={()=> handleDigitClick("2")}>2</button>
-          <button onClick={()=> handleDigitClick("3")}>3</button>
+          <button
+            className="operator"
+            onClick={() => {
+              setFirstNumber(input);
+              setOperator("+");
+              setSecondNumber(true);
+            }}
+          >
+            +
+          </button>
 
-          <button className="operator" onClick={() => {
-            setFirstNumber(input); 
-            setOperator("+"); 
-            setSecondNumber(true);
-            }}>+</button>
+          <button onClick={() => handleDigitClick("4")}>4</button>
+          <button onClick={() => handleDigitClick("5")}>5</button>
+          <button onClick={() => handleDigitClick("6")}>6</button>
 
-          <button onClick={()=> handleDigitClick("4")}>4</button>
-          <button onClick={()=> handleDigitClick("5")}>5</button>
-          <button onClick={()=> handleDigitClick("6")}>6</button>
+          <button
+            className="operator"
+            onClick={() => {
+              setFirstNumber(input);
+              setOperator("-");
+              setSecondNumber(true);
+            }}
+          >
+            -
+          </button>
 
-          <button className="operator" onClick={() => {
-            setFirstNumber(input); 
-            setOperator("-"); 
-            setSecondNumber(true);
-            }}>-</button>
+          <button onClick={() => handleDigitClick("7")}>7</button>
+          <button onClick={() => handleDigitClick("8")}>8</button>
+          <button onClick={() => handleDigitClick("9")}>9</button>
 
-          <button onClick={()=> handleDigitClick("7")}>7</button>
-          <button onClick={()=> handleDigitClick("8")}>8</button>
-          <button onClick={()=> handleDigitClick("9")}>9</button>
+          <button
+            className="operator"
+            onClick={() => {
+              setFirstNumber(input);
+              setOperator("*");
+              setSecondNumber(true);
+            }}
+          >
+            *
+          </button>
 
-          <button className="operator" onClick={() => {
-            setFirstNumber(input); 
-            setOperator("*"); 
-            setSecondNumber(true);
-            }}>*</button>
+          <button onClick={() => handleDigitClick("0")}>0</button>
 
-          <button onClick={()=> handleDigitClick("0")}>0</button>
+          <button onClick={() => handleDigitClick(",")}>.</button>
 
-          <button className="operator" onClick={() => {
-            setFirstNumber(input); 
-            setOperator("/"); 
-            setSecondNumber(true);
-            }}>/</button>
+          <button
+            className="operator"
+            onClick={() => {
+              setFirstNumber(input);
+              setOperator("/");
+              setSecondNumber(true);
+            }}
+          >
+            /
+          </button>
 
-          <button>,</button>
+          <button
+            className="equals"
+            onClick={() => {
+              if (firstNumber !== null && operator !== null) {
+                const num1 = parseFloat(firstNumber);
+                const num2 = parseFloat(input);
+                let result;
 
-          <button className="equals" onClick={() => {
-            if (firstNumber !== null && operator !== null){
-              const num1 = parseFloat(firstNumber);
-              const num2 = parseFloat(input);
-              let result;
-              switch (operator){
-                case "+":
-                  result = num1 + num2;
-                  break;
+                switch (operator) {
+                  case "+":
+                    result = num1 + num2;
+                    break;
                   case "-":
-                  result = num1 - num2;
-                  break;
+                    result = num1 - num2;
+                    break;
                   case "*":
-                  result = num1 * num2;
-                  break;
+                    result = num1 * num2;
+                    break;
                   case "/":
-                  result = num1 / num2;
-                  break;
+                    result = num1 / num2;
+                    break;
                   default:
                     result = num2;
+                }
+
+                // Ограничиваем длину результата
+                const resultStr = String(result);
+                setInput(resultStr.length > MAX_LENGTH ? resultStr.slice(0, MAX_LENGTH) : resultStr);
+
+                setFirstNumber(null);
+                setOperator(null);
+                setSecondNumber(false);
               }
-              setInput(String(result));
-              setFirstNumber(null);
-              setOperator(null);
-              setSecondNumber(false);
-            }
-          }}>=</button>
-          
-          <button className="clear" onClick={() => setInput("0")}>C</button>
+            }}
+          >
+            =
+          </button>
+
+          <button className="clear" onClick={() => setInput("0")}>
+            C
+          </button>
         </div>
       </div>
       <div className="technologies-used">
@@ -119,5 +168,3 @@ function Calculator() {
 }
 
 export default Calculator;
-
-//test-dep
