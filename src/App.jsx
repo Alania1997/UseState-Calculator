@@ -35,7 +35,7 @@ function Calculator() {
   const handleIncrement = () => {
     const currentValue = parseFloat(input); // Преобразуем строку в число
     const newValue = currentValue + 1;
-    setInput(String(newValue));  // Возвращаем как строку
+    setInput(String(newValue)); // Возвращаем как строку
   };
 
   const handleDecrement = () => {
