@@ -1,29 +1,63 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./index.css";
 
 function Calculator() {
   const [input, setInput] = useState("0");
   const [firstNumber, setFirstNumber] = useState(null);
-  const [secondNumber, setSecondNumber] = useState(false); // ✅ useState
+  const [secondNumber, setSecondNumber] = useState(false);
   const [operator, setOperator] = useState(null);
 
-  // Максимальная длина числа (ограничение)
+  // Максимальная длина числа
   const MAX_LENGTH = 10;
 
-  // Обработчик для цифр и запятой
+  //Сохранение состояния в localStorage
+  useEffect(() => {
+    const savedState = {
+      input,
+      firstNumber,
+      secondNumber,
+      operator,
+    };
+    localStorage.setItem("calculatorState", JSON.stringify(savedState));
+  }, [input, firstNumber, secondNumber, operator]);
+
+  //Восстановление состояния при загрузке
+  useEffect(() => {
+    const savedState = localStorage.getItem("calculatorState");
+    if (savedState) {
+      try {
+        const parsed = JSON.parse(savedState);
+        console.log("ВОССТАНОВЛЕНИЕ СОСТОЯНИЯ...", parsed); //Проверка
+
+        // Убедимся, что input — строка
+        setInput(parsed.input ? String(parsed.input) : "0");
+
+        setFirstNumber(parsed.firstNumber);
+        setSecondNumber(parsed.secondNumber);
+        setOperator(parsed.operator);
+
+        console.log("СОСТОЯНИЕ ВОССТАНОВЛЕНО:", {
+          input: parsed.input,
+          firstNumber: parsed.firstNumber,
+          secondNumber: parsed.secondNumber,
+          operator: parsed.operator,
+        });
+      } catch (e) {
+        console.error("Ошибка при восстановлении состояния:", e);
+      }
+    }
+  }, []); // пустой массив — вызовется только при монтировании
+
   const handleDigitClick = (digit) => {
     if (secondNumber) {
-      setInput(digit); // Сбрасываем ввод после оператора
+      setInput(digit);
       setSecondNumber(false);
     } else {
-      // Если текущее значение — "0", заменяем его на цифру (кроме запятой)
       if (input === "0" && digit !== ",") {
         setInput(digit);
       } else if (digit === "," && !input.includes(".")) {
-        // Добавляем запятую, только если её ещё нет
         setInput(input + ".");
       } else if (digit !== ",") {
-        // Ограничение длины числа
         if (input.length < MAX_LENGTH) {
           setInput(input + digit);
         }
@@ -31,11 +65,10 @@ function Calculator() {
     }
   };
 
-  // Обработчик для +1 и -1 — теперь корректно работает с числами
   const handleIncrement = () => {
-    const currentValue = parseFloat(input); // Преобразуем строку в число
+    const currentValue = parseFloat(input);
     const newValue = currentValue + 1;
-    setInput(String(newValue)); // Возвращаем как строку
+    setInput(String(newValue));
   };
 
   const handleDecrement = () => {
@@ -139,7 +172,6 @@ function Calculator() {
                     result = num2;
                 }
 
-                // Ограничиваем длину результата
                 const resultStr = String(result);
                 setInput(resultStr.length > MAX_LENGTH ? resultStr.slice(0, MAX_LENGTH) : resultStr);
 
@@ -159,8 +191,7 @@ function Calculator() {
       </div>
       <div className="technologies-used">
         <p>
-          <strong>Technologies used:</strong> React, JSX, CSS Modules, JavaScript (useState, events
-          handling)
+          <strong>Technologies used:</strong> React, JSX, CSS Modules, JavaScript (useState, useEffect, events handling)
         </p>
       </div>
     </div>
